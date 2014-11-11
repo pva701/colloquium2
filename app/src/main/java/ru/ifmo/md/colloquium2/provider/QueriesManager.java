@@ -51,9 +51,17 @@ public class QueriesManager {
     public void changeState(int state) {
         ContentValues cv = new ContentValues();
         cv.put(DatabaseHelper.TABLE_COLUMN_STATE, state);
+        context.getContentResolver().update(CandidatesContentProvider.STATE_CONTENT_URI, cv, "_id > 0", null);
     }
 
     public void deleteAll() {
         context.getContentResolver().delete(CandidatesContentProvider.CANDIDATES_CONTENT_URI, null, null);
+    }
+
+    public void updateCandidate(int id, String name) {
+        ContentValues cv = new ContentValues();
+        cv.put(DatabaseHelper.COLUMN_CANDIDATES_NAME, name);
+        context.getContentResolver().update(CandidatesContentProvider.CANDIDATES_CONTENT_URI, cv,
+                DatabaseHelper.COLUMN_CANDIDATES_ID + " = " + id, null);
     }
 }

@@ -70,6 +70,10 @@ public class Processor {
             handler.obtainMessage(Processor.GET_STATE, newState, 0).sendToTarget();
     }
 
+    public void updateCandidate(int id, String name) {
+        QueriesManager.get(context).updateCandidate(id, name);
+    }
+
     public void deleteAllCandidates() {
         QueriesManager.get(context).deleteAll();
     }

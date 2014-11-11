@@ -29,7 +29,7 @@ public class AddChangeSourceDialog extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        String name = "", url = "";
+        String name = "";
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         final LayoutInflater inflater = getActivity().getLayoutInflater();
         if (getArguments() != null) {

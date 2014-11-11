@@ -12,7 +12,9 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -35,6 +37,7 @@ import ru.ifmo.md.colloquium2.services.OperationHelper;
 public class CandidatesListFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final String DIALOG_ADD_CANDIDATE = "add_dialog";
     private static final int REQ_DIAL_ADD = 0;
+    private static final int REQ_DIAL_CHANGE = 1;
     private ListView listView;
     private CursorAdapter adapter;
     private int currentState;
@@ -146,6 +149,7 @@ public class CandidatesListFragment extends Fragment implements LoaderManager.Lo
                 }
             }
         });
+        registerForContextMenu(listView);
         HELPER.getState();
         return v;
     }
@@ -186,12 +190,48 @@ public class CandidatesListFragment extends Fragment implements LoaderManager.Lo
         }
     }
 
+    private int lastChose;
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        getActivity().getMenuInflater().inflate(R.menu.fragment_candidates_list_context, menu);
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        if (currentState != Processor.STATE_ACTIVE) {
+            Toast.makeText(getActivity(), "Poll is not active", Toast.LENGTH_SHORT).show();
+            return true;
+        }
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
+        int pos = info.position;
+        if (item.getItemId() == R.id.menu_item_change) {
+            FragmentManager fm = getActivity().getSupportFragmentManager();
+            AddChangeSourceDialog dialog = new AddChangeSourceDialog();
+            Bundle args = new Bundle();
+            args.putString(AddChangeSourceDialog.EXTRA_NAME,
+                    ((DatabaseHelper.CandidateCursor)adapter.getItem(pos)).getCandidate().getName());
+                    dialog.setArguments(args);
+            dialog.setTargetFragment(CandidatesListFragment.this, REQ_DIAL_CHANGE);
+            dialog.show(fm, DIALOG_ADD_CANDIDATE);
+            lastChose = ((DatabaseHelper.CandidateCursor)adapter.getItem(pos)).getCandidate().getId();
+            return true;
+        }
+        return super.onContextItemSelected(item);
+    }
+
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQ_DIAL_ADD) {
             if (resultCode == Activity.RESULT_OK) {
                 String name = data.getStringExtra(AddChangeSourceDialog.EXTRA_NAME);
                 HELPER.addCandidate(name);
+            }
+        } else if (requestCode == REQ_DIAL_CHANGE) {
+            if (resultCode == Activity.RESULT_OK) {
+                String name = data.getStringExtra(AddChangeSourceDialog.EXTRA_NAME);
+                HELPER.updateCandidate(lastChose, name);
             }
         }
     }

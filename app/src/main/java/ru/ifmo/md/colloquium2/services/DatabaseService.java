@@ -2,8 +2,6 @@ package ru.ifmo.md.colloquium2.services;
 
 import android.app.IntentService;
 import android.content.Intent;
-import android.util.Log;
-import android.os.Handler;
 
 import ru.ifmo.md.colloquium2.Candidate;
 import ru.ifmo.md.colloquium2.processor.Processor;
@@ -19,8 +17,9 @@ public class DatabaseService extends IntentService {
     public static final int GET_STATE = 0;
     public static final int VOTE = 1;
     public static final int CHANGE_STATE = 2;
-    public static final int ADD_CAND = 3;
+    public static final int ADD_CANDIDATES = 3;
     public static final int DELETE_ALL = 4;
+    public static final int UPDATE_CANDIDATE = 5;
 
     //public static final String LOAD_NEWS =      "source_id";
     //public static final String HANDLER_EXTRA =  "handler";
@@ -48,11 +47,15 @@ public class DatabaseService extends IntentService {
         } else if (query == CHANGE_STATE) {
             int newst = intent.getIntExtra(DATA_EXTRA, 0);
             Processor.get(getApplicationContext()).changeState(newst);
-        } else if (query == ADD_CAND) {
+        } else if (query == ADD_CANDIDATES) {
             String name = intent.getStringExtra(DATA_EXTRA);
             Processor.get(getApplicationContext()).insertCandidate(new Candidate(name, 0));
         } else if (query == DELETE_ALL) {
             Processor.get(getApplicationContext()).deleteAllCandidates();
+        } else if (query == UPDATE_CANDIDATE) {
+            int id = intent.getIntExtra(DATA_EXTRA, 0);
+            String newName = intent.getStringExtra(DATA_EXTRA1);
+            Processor.get(getApplicationContext()).updateCandidate(id, newName);
         }
     }
 }

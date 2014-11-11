@@ -53,7 +53,7 @@ public class OperationHelper {//Singlet
 
     public void addCandidate(String candidate) {
         context.startService(new Intent(context, DatabaseService.class).
-                putExtra(DatabaseService.QUERY_EXTRA, DatabaseService.ADD_CAND).
+                putExtra(DatabaseService.QUERY_EXTRA, DatabaseService.ADD_CANDIDATES).
                 putExtra(DatabaseService.DATA_EXTRA, candidate));
     }
 
@@ -67,6 +67,13 @@ public class OperationHelper {//Singlet
     public void deleteAllCandidates() {
         context.startService(new Intent(context, DatabaseService.class).
                 putExtra(DatabaseService.QUERY_EXTRA, DatabaseService.DELETE_ALL));
+    }
+
+    public void updateCandidate(int id, String name) {
+        context.startService(new Intent(context, DatabaseService.class).
+        putExtra(DatabaseService.QUERY_EXTRA, DatabaseService.UPDATE_CANDIDATE).
+        putExtra(DatabaseService.DATA_EXTRA, id).
+        putExtra(DatabaseService.DATA_EXTRA1, name));
     }
 
     public void addListener(Listener callback) {
@@ -87,4 +94,5 @@ public class OperationHelper {//Singlet
         public void onGetChangeState(int st) {}
         //public void onChangeState(int st) {}
     }
+
 }
